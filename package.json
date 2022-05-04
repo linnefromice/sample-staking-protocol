@@ -2,6 +2,7 @@
   "name": "hardhat-project",
   "scripts": {
     "hardhat": "hardhat",
+    "compile": "SKIP_LOAD=true hardhat compile",
     "test": "hardhat test"
   },
   "devDependencies": {
