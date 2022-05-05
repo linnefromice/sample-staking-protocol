@@ -16,4 +16,18 @@ describe("MintableERC20", () => {
     expect("18", (await token.decimals()).toString())
     expect("0", await (await token.totalSupply()).toString())
   })
+
+  it("Should be mintable by anyone", async () => {
+    const [owner, userA, userB] = await ethers.getSigners();
+    const token = await new MintableERC20__factory(owner).deploy("Name", "SYMBOL")
+    await token.deployTransaction.wait()
+
+    let tx;
+    tx = await token.connect(userA).mint(ethers.utils.parseUnits("1.25"))
+    await tx.wait()
+    expect("1.25", ethers.utils.formatUnits(await token.totalSupply()))
+    tx = await token.connect(userB).mint(ethers.utils.parseUnits("20.68"))
+    await tx.wait()
+    expect("21.93", ethers.utils.formatUnits(await token.totalSupply()))
+  })
 })
