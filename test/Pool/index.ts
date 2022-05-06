@@ -31,6 +31,10 @@ describe("Pool", () => {
     expect(token.address, await pool.token())
     expect(rewardToken.address, await pool.rewardToken())
     expect("0", (await pool.totalSupply()).toString())
+    expect(ethers.utils.parseEther(String(1_000_000)), (await pool.maxSupply()).toString())
+    expect(ethers.utils.parseEther(String(1_000_000)), (await rewardToken.balanceOf(pool.address)).toString())
+
+    expect("0", (await token.balanceOf(pool.address)).toString())
     expect("0", (await pool.balanceOf(owner.address)).toString())
   })
 })
