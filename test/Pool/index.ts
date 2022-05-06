@@ -15,5 +15,7 @@ describe("Pool", () => {
 
     expect(token.address, await pool.token())
     expect(rewardToken.address, await pool.rewardToken())
+    expect("0", (await pool.totalSupply()).toString())
+    expect("0", (await pool.balanceOf(owner.address)).toString())
   })
 })
