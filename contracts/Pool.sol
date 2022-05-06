@@ -45,7 +45,10 @@ contract Pool is Ownable {
     _balances[msg.sender] = _balances[msg.sender].add(_amount);
 
     token.safeTransferFrom(msg.sender, address(this), _amount);
-    rewardToken.safeTransferFrom(address(this), msg.sender, _amount);
+    
+    rewardToken.safeApprove(msg.sender, 0);
+    rewardToken.safeApprove(msg.sender, _amount);
+    rewardToken.safeTransfer(msg.sender, _amount);
 
     emit Deposited(msg.sender, _amount);
     return true;
