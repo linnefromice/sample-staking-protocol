@@ -28,14 +28,14 @@ describe("Pool", () => {
     const [owner] = await ethers.getSigners();
     const { token, rewardToken, pool } = await setup(owner)
 
-    expect(token.address, await pool.token())
-    expect(rewardToken.address, await pool.rewardToken())
-    expect("0", (await pool.totalSupply()).toString())
-    expect(ethers.utils.parseEther(String(1_000_000)), (await pool.maxSupply()).toString())
-    expect(ethers.utils.parseEther(String(1_000_000)), (await rewardToken.balanceOf(pool.address)).toString())
+    expect(token.address).to.eq(await pool.token())
+    expect(rewardToken.address).to.eq(await pool.rewardToken())
+    expect("0").to.eq((await pool.totalSupply()).toString())
+    expect(ethers.utils.parseEther(String(1_000_000))).to.eq((await pool.maxSupply()).toString())
+    expect(ethers.utils.parseEther(String(1_000_000))).to.eq((await rewardToken.balanceOf(pool.address)).toString())
 
-    expect("0", (await token.balanceOf(pool.address)).toString())
-    expect("0", (await pool.balanceOf(owner.address)).toString())
+    expect("0").to.eq((await token.balanceOf(pool.address)).toString())
+    expect("0").to.eq((await pool.balanceOf(owner.address)).toString())
   })
 
   describe("Enable to deposit & get rewardToken", () => {
@@ -46,20 +46,20 @@ describe("Pool", () => {
       let tx;
       
       // Prerequisites
-      expect(ethers.utils.parseEther("0"), (await token.balanceOf(depositor.address)).toString())
-      expect(ethers.utils.parseEther("0"), (await rewardToken.balanceOf(depositor.address)).toString())
+      expect(ethers.utils.parseEther("0")).to.eq((await token.balanceOf(depositor.address)).toString())
+      expect(ethers.utils.parseEther("0")).to.eq((await rewardToken.balanceOf(depositor.address)).toString())
       tx = await token.connect(depositor).mint(ethers.utils.parseEther("0.05"), { from: depositor.address })
       await tx.wait()
-      expect(ethers.utils.parseEther("0.05"), (await token.balanceOf(depositor.address)).toString())
-      expect(ethers.utils.parseEther("0"), (await rewardToken.balanceOf(depositor.address)).toString())
+      expect(ethers.utils.parseEther("0.05")).to.eq((await token.balanceOf(depositor.address)).toString())
+      expect(ethers.utils.parseEther("0")).to.eq((await rewardToken.balanceOf(depositor.address)).toString())
 
       // deposit
-      tx = await token.connect(depositor).approve(pool.address, "1", { from: depositor.address })
+      tx = await token.connect(depositor).approve(pool.address, ethers.utils.parseEther("0.01"), { from: depositor.address })
       await tx.wait()
-      tx = await pool.connect(depositor).deposit("1", { from: depositor.address })
+      tx = await pool.connect(depositor).deposit(ethers.utils.parseEther("0.01"), { from: depositor.address })
       await tx.wait()
-      expect(ethers.utils.parseEther("0.04"), (await token.balanceOf(depositor.address)).toString())
-      expect(ethers.utils.parseEther("0.01"), (await rewardToken.balanceOf(depositor.address)).toString())
+      expect(ethers.utils.parseEther("0.04")).to.eq((await token.balanceOf(depositor.address)).toString())
+      expect(ethers.utils.parseEther("0.01")).to.eq((await rewardToken.balanceOf(depositor.address)).toString())
     })
   })
 })
