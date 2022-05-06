@@ -5,12 +5,17 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+interface IMintableERC20 {
+  function mint(uint256) external returns (bool);
+}
+
 contract Pool is Ownable {
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
 
   IERC20 public token;
   IERC20 public rewardToken;
+  uint256 public maxSupply = 1 * 1000000 * 1e18; // 1 million;
   uint256 public _totalSupply;
   mapping(address => uint256) private _balances;
 
@@ -22,6 +27,9 @@ contract Pool is Ownable {
   ) {
     token = IERC20(_token);
     rewardToken = IERC20(_rewardToken);
+    
+    // premint rewardToken
+    IMintableERC20(_rewardToken).mint(maxSupply);
   }
 
   function totalSupply() public view returns (uint256) {
@@ -37,8 +45,7 @@ contract Pool is Ownable {
     _balances[msg.sender] = _balances[msg.sender].add(_amount);
 
     token.safeTransferFrom(msg.sender, address(this), _amount);
-
-    // mint rewardToken
+    rewardToken.safeTransferFrom(address(this), msg.sender, _amount);
 
     emit Deposited(msg.sender, _amount);
     return true;
