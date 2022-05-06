@@ -14,7 +14,7 @@ describe("MintableERC20", () => {
     expect(_name, await token.name())
     expect(_symbol, await token.symbol())
     expect("18", (await token.decimals()).toString())
-    expect("0", await (await token.totalSupply()).toString())
+    expect("0", (await token.totalSupply()).toString())
   })
 
   it("Should be mintable by anyone", async () => {

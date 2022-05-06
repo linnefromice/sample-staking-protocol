@@ -6,10 +6,14 @@ describe("Pool", () => {
   it("Should create Pool with selected parameter", async () => {
     const [owner] = await ethers.getSigners();
     
-    const token = await new MintableERC20__factory(owner).deploy("Token", "TOKEN")
-    await token.deployTransaction.wait()
-    const rewardToken = await new MintableERC20__factory(owner).deploy("Reward Token", "REWARD_TOKEN")
-    await rewardToken.deployTransaction.wait()
+    const [token, rewardToken] = await Promise.all([
+      new MintableERC20__factory(owner).deploy("Token", "TOKEN"),
+      new MintableERC20__factory(owner).deploy("Reward Token", "REWARD_TOKEN")
+    ])
+    await Promise.all([
+      token.deployTransaction.wait(),
+      rewardToken.deployTransaction.wait()
+    ])
     const pool = await new Pool__factory(owner).deploy(token.address, rewardToken.address)
     await pool.deployTransaction.wait()
 
