@@ -1,29 +1,39 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// When running the script with `npx hardhat run <script>` you'll find the Hardhat
-// Runtime Environment's members available in the global scope.
 import { ethers } from "hardhat";
+import { MintableERC20__factory, Pool__factory, SampleGovToken__factory, SampleVeToken__factory, StakingPool__factory } from "../typechain";
 
 async function main() {
-  // Hardhat always runs the compile task when running scripts with its command
-  // line interface.
-  //
-  // If this script is run directly using `node` you may want to call compile
-  // manually to make sure everything is compiled
-  // await hre.run('compile');
+  const [owner] = await ethers.getSigners();
 
-  // We get the contract to deploy
-  const Greeter = await ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+  // deploy mocks
+  const [mockDai, mockTrueUsd] = await Promise.all([
+    new MintableERC20__factory(owner).deploy("Mock Dai Stablecoin", "mockDAI"),
+    new MintableERC20__factory(owner).deploy("Mock TrueUSD", "mockTUSD"),
+  ])
+  await Promise.all([
+    mockDai.deployTransaction.wait(),
+    mockTrueUsd.deployTransaction.wait()
+  ])
 
-  await greeter.deployed();
+  // main deployments
+  const govToken = await new SampleGovToken__factory(owner).deploy()
+  await govToken.deployTransaction.wait()
 
-  console.log("Greeter deployed to:", greeter.address);
+  const [daiPool, trueUsdPool] = await Promise.all([
+    new Pool__factory(owner).deploy(mockDai.address, govToken.address),
+    new Pool__factory(owner).deploy(mockTrueUsd.address, govToken.address)
+  ])
+  await Promise.all([
+    daiPool.deployTransaction.wait(),
+    trueUsdPool.deployTransaction.wait()
+  ])
+
+  const veToken = await new SampleVeToken__factory(owner).deploy(owner.address)
+  await veToken.deployTransaction.wait()
+  const stakingPool = await new StakingPool__factory(owner).deploy(govToken.address, veToken.address)
+  await stakingPool.deployTransaction.wait()
+  await veToken.setOperator(stakingPool.address)
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
