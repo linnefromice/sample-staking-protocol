@@ -40,6 +40,21 @@ async function main() {
   console.log(`> SampleVeToken.setOperator`)
   await veToken.setOperator(stakingPool.address)
   console.log("FINISH deploy")
+  console.log({
+    mocks: {
+      dai: mockDai.address,
+      trueUsd: mockTrueUsd.address,
+    },
+    pools: {
+      dai: daiPool.address,
+      trueUsd: trueUsdPool.address,
+    },
+    stakingPool: stakingPool.address,
+    tokens: {
+      govToken: govToken.address,
+      veToken: veToken.address
+    }
+  })
 }
 
 main().catch((error) => {
