@@ -20,8 +20,14 @@ contract SampleVeToken is ERC20, Ownable {
     operator = _operator;
   }
 
-  function mint(address _to, uint256 _amount) external {
+  function mint(address _to, uint256 _amount) public returns (bool) {
     require(msg.sender == operator, "Only operator");
     _mint(_to, _amount);
+    return true;
+  }
+
+  function mint(uint256 _amount) external returns (bool) {
+    _mint(msg.sender, _amount);
+    return true;
   }
 }
