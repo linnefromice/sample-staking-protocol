@@ -19,12 +19,17 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
+const GWEI = 1000 * 1000 * 1000
+
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
-
 const config: HardhatUserConfig = {
   solidity: "0.8.4",
   networks: {
+    localhost: {
+      url: 'http://127.0.0.1:8545',
+      gasPrice: 65 * GWEI,
+    },
     ropsten: {
       url: process.env.ROPSTEN_URL || "",
       accounts:
