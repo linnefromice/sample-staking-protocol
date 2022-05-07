@@ -1,7 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "ethers";
 import hre from "hardhat";
-import { ERC20__factory } from "../typechain";
+import { ERC20__factory, Pool__factory, StakingPool__factory } from "../typechain";
 
 // need updates
 const addresses = {
@@ -42,8 +42,36 @@ const checkERC20Token = async (args: CheckFunctionArgs & { name?: string }) => {
   for (const _v of targets) console.log(`${_v.label} ... ${await _v.fn()}`)
   if (args.name) console.log(`--- [end] ERC20: ${args.name} ---`)
 }
-const checkPool = async (args: CheckFunctionArgs & { name?: string }) => {}
-const checkStakingPool = async (args: CheckFunctionArgs & { name?: string }) => {}
+const checkPool = async (args: CheckFunctionArgs & { name?: string }) => {
+  console.log(`--- [start] Pool: ${args.name} ---`)
+  const _instance = await Pool__factory.connect(
+    args.address,
+    args.providerOrSigner,
+  )
+  const targets = [
+    { label: 'token', fn: _instance.token },
+    { label: 'rewardToken', fn: _instance.rewardToken },
+    { label: 'maxSupply', fn: _instance.maxSupply },
+    { label: 'totalSupply', fn: _instance.totalSupply },
+  ]
+  for (const _v of targets) console.log(`${_v.label} ... ${await _v.fn()}`)
+  console.log(`--- [end] Pool: ${args.name} ---`)
+}
+const checkStakingPool = async (args: CheckFunctionArgs & { name?: string }) => {
+  console.log(`--- [start] StakingPool: ${args.name} ---`)
+  const _instance = await StakingPool__factory.connect(
+    args.address,
+    args.providerOrSigner,
+  )
+  const targets = [
+    { label: 'token', fn: _instance.token },
+    { label: 'rewardToken', fn: _instance.rewardToken },
+    { label: 'maxSupply', fn: _instance.maxSupply },
+    { label: 'totalSupply', fn: _instance.totalSupply },
+  ]
+  for (const _v of targets) console.log(`${_v.label} ... ${await _v.fn()}`)
+  console.log(`--- [end] Pool: ${args.name} ---`)
+}
 
 async function main() {
   const { ethers: { provider }} = hre
@@ -67,6 +95,21 @@ async function main() {
     providerOrSigner: provider,
     name: "Sample VeToken"
   });
+  await checkPool({
+    address: addresses.pools.dai,
+    providerOrSigner: provider,
+    name: "Dai Pool"
+  })
+  await checkPool({
+    address: addresses.pools.trueUsd,
+    providerOrSigner: provider,
+    name: "TrueUsd Pool"
+  })
+  await checkStakingPool({
+    address: addresses.stakingPool,
+    providerOrSigner: provider,
+    name: "Staking Pool"
+  })
 }
 
 main().catch((error) => {
