@@ -4,7 +4,7 @@
     "hardhat": "hardhat",
     "compile": "SKIP_LOAD=true hardhat compile",
     "test": "hardhat test",
-    "node": "hardhat node  --hostname 0.0.0.0",
+    "local-node": "hardhat node --hostname 0.0.0.0",
     "deploy:local": "hardhat run scripts/deploy.ts --network localhost",
     "mock-mint:local": "hardhat run scripts/mock-mint.ts --network localhost",
     "scenario:local": "hardhat run scripts/scenario.ts --network localhost"
