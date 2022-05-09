@@ -19,6 +19,9 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
+const MNEMONIC = process.env.MNEMONIC || ''
+const INFURA_KEY = process.env.INFURA_KEY || '' // if use Infura, set this parameter
+const ALCHEMY_KEY = process.env.ALCHEMY_KEY || '' // if use Alchemy, set this parameter
 const GWEI = 1000 * 1000 * 1000
 
 // You need to export an object to set up your config
@@ -30,11 +33,18 @@ const config: HardhatUserConfig = {
       url: 'http://127.0.0.1:8545',
       gasPrice: 65 * GWEI,
     },
-    ropsten: {
-      url: process.env.ROPSTEN_URL || "",
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
-    },
+    kovan: {
+      url: INFURA_KEY
+        ? `https://kovan.infura.io/v3/${INFURA_KEY}`
+        : `https://eth-kovan.alchemyapi.io/v2/${ALCHEMY_KEY}`,
+      gasPrice: 3 * GWEI,
+      accounts: {
+        mnemonic: MNEMONIC,
+        path: "m/44'/60'/0'/0",
+        initialIndex: 0,
+        count: 20,
+      },
+    }
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
