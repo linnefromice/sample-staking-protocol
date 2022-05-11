@@ -1,17 +1,11 @@
-import { ethers } from "hardhat";
+import { ethers, network } from "hardhat";
+import { loadDeployedContractAddresses } from "../libs/utils/deployed-contracts";
 import { MintableERC20__factory } from "../typechain";
-
-// need updates
-const addresses = {
-  mocks: {
-    dai: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
-    trueUsd: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'
-  }
-}
 
 async function main() {
   console.log("START mock mint")
   const [owner] = await ethers.getSigners();
+  const addresses = loadDeployedContractAddresses(network.name)
 
   const mocks = [addresses.mocks.dai, addresses.mocks.trueUsd]
   for await (const addr of mocks) {
