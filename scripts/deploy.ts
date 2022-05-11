@@ -84,7 +84,7 @@ async function main() {
   _writeToJson({
     network: network.name,
     group: "tokens",
-    name: "dai",
+    name: "veToken",
     value: veToken.address
   })
 
