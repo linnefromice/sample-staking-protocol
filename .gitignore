@@ -9,6 +9,5 @@ cache
 artifacts
 
 # Customize
-outputs/*
-!outputs/.gitkeep
+outputs/contracts-localhost.json
 tmp
