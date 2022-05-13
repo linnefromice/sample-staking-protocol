@@ -61,5 +61,25 @@ describe("Pool", () => {
       expect(ethers.utils.parseEther("0.04")).to.eq((await token.balanceOf(depositor.address)).toString())
       expect(ethers.utils.parseEther("0.01")).to.eq((await rewardToken.balanceOf(depositor.address)).toString())
     })
+
+    it("failure: amount is zero", async () => {
+      const [owner, depositor] = await ethers.getSigners();
+      const { token, rewardToken, pool } = await setup(owner)
+ 
+      let tx;
+      
+      // Prerequisites
+      tx = await token.connect(depositor).mint(ethers.utils.parseEther("0.05"), { from: depositor.address })
+      await tx.wait()
+
+      // deposit
+      tx = await token.connect(depositor).approve(pool.address, ethers.utils.parseEther("0.01"), { from: depositor.address })
+      await tx.wait()
+      await expect(
+        pool.connect(depositor).deposit("0", { from: depositor.address })
+      ).to.be.revertedWith("amount is positive number")
+      expect(ethers.utils.parseEther("0.05")).to.eq((await token.balanceOf(depositor.address)).toString())
+      expect(ethers.utils.parseEther("0")).to.eq((await rewardToken.balanceOf(depositor.address)).toString())
+    })
   })
 })
