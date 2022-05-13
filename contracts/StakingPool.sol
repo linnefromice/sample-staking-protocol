@@ -40,7 +40,7 @@ contract StakingPool is Ownable {
   }
 
   function stake(uint256 _amount) public returns (bool) {
-    // require _amount > 0
+    require(_amount > 0, "amount is positive number");
     _totalSupply = _totalSupply.add(_amount);
     _balances[msg.sender] = _balances[msg.sender].add(_amount);
 
