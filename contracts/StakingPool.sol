@@ -20,6 +20,7 @@ contract StakingPool is Ownable {
   mapping(address => uint256) private _balances;
 
   event Staked(address indexed user, uint256 amount);
+  event Unstaked(address indexed user, uint256 amount);
 
   constructor(
     address _token,
@@ -51,6 +52,21 @@ contract StakingPool is Ownable {
     rewardToken.safeTransfer(msg.sender, _amount);
 
     emit Staked(msg.sender, _amount);
+    return true;
+  }
+
+  function unstake(uint256 _amount) public returns (bool) {
+    require(_amount < _balances[msg.sender] && _amount > 0, "amount is sender's balance or less");
+    _totalSupply = _totalSupply.sub(_amount);
+    _balances[msg.sender] = _balances[msg.sender].sub(_amount);
+
+    rewardToken.safeTransferFrom(msg.sender, address(this), _amount);
+
+    token.safeApprove(msg.sender, 0);
+    token.safeApprove(msg.sender, _amount);
+    token.safeTransfer(msg.sender, _amount);
+
+    emit Unstaked(msg.sender, _amount);
     return true;
   }
 }

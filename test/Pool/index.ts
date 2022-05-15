@@ -82,4 +82,67 @@ describe("Pool", () => {
       expect(ethers.utils.parseEther("0")).to.eq((await rewardToken.balanceOf(depositor.address)).toString())
     })
   })
+
+  describe("Enable to withdraw & get back tokens", () => {
+    it("success", async () => {
+      const [owner, player] = await ethers.getSigners();
+      const { token, rewardToken, pool } = await setup(owner)
+
+      let tx;
+
+      // Prerequisites
+      // - mint mock token
+      tx = await token.connect(player).mint(ethers.utils.parseEther("0.05"), { from: player.address })
+      await tx.wait()
+      // - deposit
+      tx = await token.connect(player).approve(pool.address, ethers.utils.parseEther("0.02"), { from: player.address })
+      await tx.wait()
+      tx = await pool.connect(player).deposit(ethers.utils.parseEther("0.02"), { from: player.address })
+      await tx.wait()
+
+      // withdraw
+      // - approve
+      tx = await rewardToken.connect(player).approve(pool.address, ethers.utils.parseEther("0.015"), { from: player.address })
+      await tx.wait()
+      // - execute
+      tx = await pool.connect(player).withdraw(ethers.utils.parseEther("0.015"), { from: player.address })
+      await tx.wait()
+
+      expect(ethers.utils.parseEther("0.045")).to.eq((await token.balanceOf(player.address)).toString())
+      expect(ethers.utils.parseEther("0.005")).to.eq((await rewardToken.balanceOf(player.address)).toString())
+    })
+
+    it("failure: amount is over deposited", async () => {
+      const [owner, player] = await ethers.getSigners();
+      const { token, rewardToken, pool } = await setup(owner)
+
+      let tx;
+
+      // Prerequisites
+      // - mint mock token
+      tx = await token.connect(player).mint(ethers.utils.parseEther("0.05"), { from: player.address })
+      await tx.wait()
+      // - deposit
+      tx = await token.connect(player).approve(pool.address, ethers.utils.parseEther("0.01"), { from: player.address })
+      await tx.wait()
+      tx = await pool.connect(player).deposit(ethers.utils.parseEther("0.01"), { from: player.address })
+      await tx.wait()
+
+      // withdraw
+      await expect(
+        pool.connect(player).withdraw(ethers.utils.parseEther("0.02"), { from: player.address })
+      ).to.be.revertedWith("amount is sender's balance or less")
+      expect(ethers.utils.parseEther("0.04")).to.eq((await token.balanceOf(player.address)).toString())
+      expect(ethers.utils.parseEther("0.01")).to.eq((await rewardToken.balanceOf(player.address)).toString())
+    })
+
+    it("failure: amount is zero", async () => {
+      const [owner, player] = await ethers.getSigners();
+      const { pool } = await setup(owner)
+
+      await expect(
+        pool.connect(player).withdraw("0", { from: player.address })
+      ).to.be.revertedWith("amount is sender's balance or less")
+    })
+  })
 })

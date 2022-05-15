@@ -20,6 +20,7 @@ contract Pool is Ownable {
   mapping(address => uint256) private _balances;
 
   event Deposited(address indexed user, uint256 amount);
+  event Withdrawed(address indexed user, uint256 amount);
 
   constructor(
     address _token,
@@ -51,6 +52,21 @@ contract Pool is Ownable {
     rewardToken.safeTransfer(msg.sender, _amount);
 
     emit Deposited(msg.sender, _amount);
+    return true;
+  }
+
+  function withdraw(uint256 _amount) public returns (bool) {
+    require(_amount < _balances[msg.sender] && _amount > 0, "amount is sender's balance or less");
+    _totalSupply = _totalSupply.sub(_amount);
+    _balances[msg.sender] = _balances[msg.sender].sub(_amount);
+
+    rewardToken.safeTransferFrom(msg.sender, address(this), _amount);
+
+    token.safeApprove(msg.sender, 0);
+    token.safeApprove(msg.sender, _amount);
+    token.safeTransfer(msg.sender, _amount);
+
+    emit Withdrawed(msg.sender, _amount);
     return true;
   }
 }
