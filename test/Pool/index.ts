@@ -131,7 +131,7 @@ describe("Pool", () => {
       // withdraw
       await expect(
         pool.connect(player).withdraw(ethers.utils.parseEther("0.02"), { from: player.address })
-      ).to.be.revertedWith("amount is balance or less")
+      ).to.be.revertedWith("amount is sender's balance or less")
       expect(ethers.utils.parseEther("0.04")).to.eq((await token.balanceOf(player.address)).toString())
       expect(ethers.utils.parseEther("0.01")).to.eq((await rewardToken.balanceOf(player.address)).toString())
     })
@@ -142,7 +142,7 @@ describe("Pool", () => {
 
       await expect(
         pool.connect(player).withdraw("0", { from: player.address })
-      ).to.be.revertedWith("amount is balance or less")
+      ).to.be.revertedWith("amount is sender's balance or less")
     })
   })
 })

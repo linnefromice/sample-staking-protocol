@@ -56,7 +56,7 @@ contract Pool is Ownable {
   }
 
   function withdraw(uint256 _amount) public returns (bool) {
-    require(_amount < _balances[msg.sender] && _amount > 0, "amount is balance or less");
+    require(_amount < _balances[msg.sender] && _amount > 0, "amount is sender's balance or less");
     _totalSupply = _totalSupply.sub(_amount);
     _balances[msg.sender] = _balances[msg.sender].sub(_amount);
 
