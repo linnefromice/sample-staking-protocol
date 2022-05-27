@@ -1,5 +1,5 @@
 import { ethers, network } from "hardhat";
-import { MintableERC20__factory, Pool__factory, SampleGovToken__factory, SampleVeToken__factory, StakingPool__factory } from "../typechain";
+import { MintableERC20__factory, NotificationContract__factory, Pool__factory, SampleGovToken__factory, SampleVeToken__factory, StakingPool__factory } from "../typechain";
 import {
   writeContractAddress,
   resetContractAddressesJson,
@@ -100,6 +100,18 @@ async function main() {
 
   console.log(`> SampleVeToken.setOperator`)
   await veToken.setOperator(stakingPool.address)
+
+  console.log(`> Deploy Utility Contracts`)
+  console.log(`>> Deploy NotificationContract`)
+  const notificationContract = await new NotificationContract__factory(owner).deploy()
+  await notificationContract.deployTransaction.wait()
+  _writeToJson({
+    network: network.name,
+    group: "utilities",
+    name: "notificationContract",
+    value: notificationContract.address
+  })
+
   console.log("FINISH deploy")
   console.log(loadDeployedContractAddresses(network.name))
 }
