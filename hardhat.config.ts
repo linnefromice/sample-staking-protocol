@@ -1,23 +1,26 @@
 import * as dotenv from "dotenv";
+import fs from 'fs'
+import path from 'path'
 
-import { HardhatUserConfig, task } from "hardhat/config";
+import '@nomiclabs/hardhat-ethers'
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
+import { HardhatUserConfig } from "hardhat/config";
 
 dotenv.config();
 
-// This is a sample Hardhat task. To learn how to create your own go to
-// https://hardhat.org/guides/create-task.html
-task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
-  const accounts = await hre.ethers.getSigners();
-
-  for (const account of accounts) {
-    console.log(account.address);
-  }
-});
+const SKIP_LOAD = process.env.SKIP_LOAD === 'true'
+if (!SKIP_LOAD) {
+  const tasksPath = path.join(__dirname, 'tasks')
+  fs.readdirSync(tasksPath)
+    .filter((_path) => _path.includes('.ts'))
+    .forEach((task) => {
+      require(`${tasksPath}/${task}`)
+    })
+}
 
 const MNEMONIC = process.env.MNEMONIC || ''
 const INFURA_KEY = process.env.INFURA_KEY || '' // if use Infura, set this parameter

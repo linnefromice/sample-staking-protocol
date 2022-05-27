@@ -8,7 +8,8 @@
     "deploy:local": "hardhat run scripts/deploy.ts --network localhost",
     "mock-mint:local": "hardhat run scripts/mock-mint.ts --network localhost",
     "scenario-in:local": "hardhat run scripts/scenario-in.ts --network localhost",
-    "scenario-out:local": "hardhat run scripts/scenario-out.ts --network localhost"
+    "scenario-out:local": "hardhat run scripts/scenario-out.ts --network localhost",
+    "task:notification:all": "hardhat notification:all --network localhost"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.5",
